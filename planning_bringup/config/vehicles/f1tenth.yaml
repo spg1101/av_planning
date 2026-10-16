@@ -1,0 +1,10 @@
+# F1TENTH car (also used by f1tenth_gym). Shared by planning AND controls.
+vehicle:
+  wheelbase: 0.3302          # m (gym default lf + lr)
+  max_steer: 0.4189          # rad (24 deg)
+  max_speed: 3.0             # m/s, start conservative; raise after testing
+  max_accel: 3.0             # m/s^2
+  max_decel: 4.0             # m/s^2
+  max_lateral_accel: 4.0     # m/s^2, traction/comfort limit
+  width: 0.31                # m
+  length: 0.58               # m

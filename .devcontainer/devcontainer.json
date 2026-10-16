@@ -1,0 +1,15 @@
+{
+  "name": "av_planning (ROS 2 Humble)",
+  "build": { "dockerfile": "Dockerfile" },
+  "workspaceMount": "source=${localWorkspaceFolder},target=/ws/src/av_planning,type=bind",
+  "workspaceFolder": "/ws/src/av_planning",
+  "runArgs": ["--network=host", "--ipc=host"],
+  "containerEnv": { "DISPLAY": "${localEnv:DISPLAY}" },
+  "mounts": ["source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind"],
+  "postCreateCommand": "cd /ws/src && vcs import < av_planning/planning.repos && rosdep update && rosdep install --from-paths /ws/src --ignore-src -y && pre-commit install",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "charliermarsh.ruff", "ms-iot.vscode-ros"]
+    }
+  }
+}

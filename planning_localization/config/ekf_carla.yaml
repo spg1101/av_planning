@@ -1,0 +1,35 @@
+# robot_localization EKF in the odom frame: publishes odom -> base_link and /odometry/filtered.
+# Config vectors are [x, y, z, roll, pitch, yaw, vx, vy, vz, vroll, vpitch, vyaw, ax, ay, az].
+ekf_filter_node:
+  ros__parameters:
+    frequency: 50.0
+    sensor_timeout: 0.2
+    two_d_mode: true
+    publish_tf: true
+    map_frame: map
+    odom_frame: odom
+    base_link_frame: base_link
+    world_frame: odom
+
+    # Wheel odometry: forward speed and yaw rate only (never fuse its integrated pose).
+    odom0: /vehicle/odom
+    odom0_config: [false, false, false,
+                   false, false, false,
+                   true,  true,  false,
+                   false, false, true,
+                   false, false, false]
+    odom0_differential: false
+    odom0_queue_size: 10
+
+    # IMU: yaw rate and forward acceleration.
+    imu0: /sensors/imu
+    imu0_config: [false, false, false,
+                  false, false, false,
+                  false, false, false,
+                  false, false, true,
+                  true,  false, false]
+    imu0_differential: false
+    imu0_remove_gravitational_acceleration: true
+    imu0_queue_size: 10
+
+    # TODO(member A, P3.2): add a second EKF in the map frame + navsat_transform_node for GNSS.

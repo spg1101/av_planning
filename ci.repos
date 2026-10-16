@@ -1,0 +1,6 @@
+# CI only needs the shared messages (no simulator).
+repositories:
+  av_interfaces:
+    type: git
+    url: https://github.com/<your-org>/av_interfaces.git
+    version: main

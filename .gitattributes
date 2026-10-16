@@ -1,0 +1,5 @@
+# Large map files go through Git LFS (run `git lfs install` once).
+*.pgm       filter=lfs diff=lfs merge=lfs -text
+*.png       filter=lfs diff=lfs merge=lfs -text
+*.posegraph filter=lfs diff=lfs merge=lfs -text
+*.data      filter=lfs diff=lfs merge=lfs -text

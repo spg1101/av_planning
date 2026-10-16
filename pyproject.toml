@@ -1,0 +1,16 @@
+# Tool configuration only (each ROS package has its own setup.py).
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B"]
+ignore = ["B008"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["planning_core", "planning_nodes", "planning_world_model",
+                     "planning_sim", "planning_eval"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true

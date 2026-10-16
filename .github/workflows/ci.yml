@@ -1,0 +1,46 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - run: pip install pre-commit
+      - run: pre-commit run --all-files --show-diff-on-failure
+
+  build-and-test:
+    runs-on: ubuntu-22.04
+    container: ros:humble
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: src/av_planning
+      - name: Import dependencies (no simulator in CI)
+        run: |
+          apt-get update
+          apt-get install -y python3-vcstool git
+          vcs import src < src/av_planning/ci.repos
+          # If av_interfaces is private, use a deploy key or a token with read access.
+      - name: Install ROS dependencies
+        run: |
+          rosdep update
+          rosdep install --from-paths src --ignore-src -y --rosdistro humble
+      - name: Build
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          colcon build --event-handlers console_direct+
+      - name: Test
+        shell: bash
+        run: |
+          source /opt/ros/humble/setup.bash
+          source install/setup.bash
+          colcon test --event-handlers console_direct+
+          colcon test-result --verbose
