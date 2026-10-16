@@ -16,7 +16,7 @@
 ## Review rules
 
 - The planning lead is a code owner of the whole repo and reviews every PR.
-- The lead's own PRs (SLAM, behavior, tooling) are reviewed by Member A or Member B,
+- The lead's own PRs (behavior, stand-ins, tooling) are reviewed by Member A or Member B,
   which is why they are co-owners of those paths in `.github/CODEOWNERS`.
   GitHub never lets authors approve their own PRs.
 - Keep PRs under ~400 changed lines. Split bigger tasks.

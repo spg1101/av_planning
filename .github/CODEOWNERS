@@ -5,7 +5,6 @@
 *                                                   @PLANNING_LEAD
 
 # Areas the lead writes personally: members are co-owners so the lead's PRs can be approved.
-/planning_localization/                             @PLANNING_LEAD @MEMBER_A
 /planning_core/planning_core/behavior/              @PLANNING_LEAD @MEMBER_A @MEMBER_B
 /planning_nodes/planning_nodes/behavior_node.py     @PLANNING_LEAD @MEMBER_A @MEMBER_B
 /planning_sim/                                      @PLANNING_LEAD @MEMBER_A @MEMBER_B
