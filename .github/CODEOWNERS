@@ -2,14 +2,14 @@
 # The LAST matching line wins, so the default comes first.
 
 # Default: the planning lead reviews everything.
-*                                                   @PLANNING_LEAD
+*                                                   @spg1101
 
 # Areas the lead writes personally: members are co-owners so the lead's PRs can be approved.
-/planning_core/planning_core/behavior/              @PLANNING_LEAD @MEMBER_A @MEMBER_B
-/planning_nodes/planning_nodes/behavior_node.py     @PLANNING_LEAD @MEMBER_A @MEMBER_B
-/planning_sim/                                      @PLANNING_LEAD @MEMBER_A @MEMBER_B
-/planning_carla/                                    @PLANNING_LEAD @MEMBER_A @MEMBER_B
-/scripts/                                           @PLANNING_LEAD @MEMBER_A @MEMBER_B
-/planning_bringup/                                  @PLANNING_LEAD @MEMBER_A @MEMBER_B
-/.github/                                           @PLANNING_LEAD @MEMBER_A @MEMBER_B
-/.devcontainer/                                     @PLANNING_LEAD @MEMBER_A @MEMBER_B
+/planning_core/planning_core/behavior/              @spg1101 avg-gitcoder thewaylhb
+/planning_nodes/planning_nodes/behavior_node.py     @spg1101 avg-gitcoder thewaylhb
+/planning_sim/                                      @spg1101 avg-gitcoder thewaylhb
+/planning_carla/                                    @spg1101 avg-gitcoder thewaylhb
+/scripts/                                           @spg1101 avg-gitcoder thewaylhb
+/planning_bringup/                                  @spg1101 avg-gitcoder thewaylhb
+/.github/                                           @spg1101 avg-gitcoder thewaylhb
+/.devcontainer/                                     @spg1101 avg-gitcoder thewaylhb

@@ -4,5 +4,5 @@
 repositories:
   av_interfaces:
     type: git
-    url: git@github.com:<your-org>/av_interfaces.git
+    url: git@github.com:spg1101/av_interfaces.git
     version: main
