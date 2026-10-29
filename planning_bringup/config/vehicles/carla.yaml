@@ -1,11 +1,14 @@
-# CARLA ego vehicle. TODO(lead): read the real values from the vehicle's physics control
-# (vehicle.get_physics_control()) for whichever blueprint the team chooses.
+# CARLA ego vehicle (vehicle.lincoln.mkz_2020). Shared by planning AND controls.
+# Regenerate from CARLA's physics whenever the team changes the ego blueprint:
+#   ros2 run planning_carla export_vehicle_params --blueprint vehicle.lincoln.mkz_2020 \
+#     --out src/av_planning/planning_bringup/config/vehicles/carla.yaml
+# (geometry is approximate until that has been run once)
 vehicle:
-  wheelbase: 2.87
+  wheelbase: 2.87            # m
   max_steer: 0.61            # rad
   max_speed: 13.9            # m/s (50 km/h)
-  max_accel: 3.0
-  max_decel: 6.0
-  max_lateral_accel: 3.0
-  width: 2.1
-  length: 4.8
+  max_accel: 3.0             # m/s^2
+  max_decel: 6.0             # m/s^2
+  max_lateral_accel: 3.0     # m/s^2, comfort limit
+  width: 2.1                 # m
+  length: 4.8                # m

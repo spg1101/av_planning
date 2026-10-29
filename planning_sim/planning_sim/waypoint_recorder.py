@@ -1,4 +1,4 @@
-"""Record a waypoint CSV by driving a lap (teleop in the gym, or by hand on the real car).
+"""Record a waypoint CSV by driving a lap (for the F1TENTH track; CARLA uses the exported lane graph).
 
 ros2 run planning_sim waypoint_recorder --ros-args -p output:=levine.csv
 """

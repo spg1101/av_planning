@@ -3,7 +3,7 @@
 <package format="3">
   <name>planning_sim</name>
   <version>0.1.0</version>
-  <description>Stand-ins for other subteams (adapter, sim, controller, perception)</description>
+  <description>Stand-ins for other subteams (kinematic sim, controller, perception)</description>
   <maintainer email="planning-lead@example.com">Planning Lead</maintainer>
   <license>MIT</license>
 

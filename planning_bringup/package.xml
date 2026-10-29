@@ -13,6 +13,10 @@
   <exec_depend>planning_world_model</exec_depend>
   <exec_depend>planning_localization</exec_depend>
   <exec_depend>planning_sim</exec_depend>
+  <exec_depend>planning_carla</exec_depend>
+  <exec_depend>pointcloud_to_laserscan</exec_depend>
+  <exec_depend>foxglove_bridge</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
   <exec_depend>planning_eval</exec_depend>
   <exec_depend>ros2bag</exec_depend>
   <test_depend>python3-pytest</test_depend>

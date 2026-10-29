@@ -1,0 +1,11 @@
+# Same route with 40 Traffic Manager cars: lead-vehicle following and stopping behind traffic.
+/**:
+  ros__parameters:
+    scenario_name: town03_route_traffic
+    town: Town03
+    spawn_index: 0
+    goal_index: 40
+    num_vehicles: 40
+    seed: 2
+    timeout: 240.0
+    goal_tolerance: 3.0

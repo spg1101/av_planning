@@ -1,4 +1,4 @@
-"""Tiny kinematic bicycle simulator: the fastest closed-loop test, no gym, no GPU.
+"""Tiny kinematic bicycle simulator: the fastest closed-loop test, no CARLA, no GPU (also used in CI).
 
 In:  /drive (AckermannDriveStamped), /planning/trajectory (only in perfect_tracking mode)
 Out: TF map -> base_link, /ground_truth/odom, /vehicle/odom

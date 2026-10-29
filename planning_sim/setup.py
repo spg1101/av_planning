@@ -14,12 +14,11 @@ setup(
     zip_safe=True,
     maintainer="Planning Lead",
     maintainer_email="planning-lead@example.com",
-    description="Stand-ins for other subteams (adapter, sim, controller, perception)",
+    description="Stand-ins for other subteams (kinematic sim, controller, perception)",
     license="MIT",
     tests_require=["pytest"],
     entry_points={
         "console_scripts": [
-            "gym_adapter = planning_sim.gym_adapter:main",
             "kinematic_sim = planning_sim.kinematic_sim:main",
             "pure_pursuit_stub = planning_sim.pure_pursuit_stub:main",
             "fake_perception = planning_sim.fake_perception:main",

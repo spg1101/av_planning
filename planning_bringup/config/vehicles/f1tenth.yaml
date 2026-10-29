@@ -1,6 +1,6 @@
-# F1TENTH car (also used by f1tenth_gym). Shared by planning AND controls.
+# F1TENTH car (hardware target, and the kinematic sim). Shared by planning AND controls.
 vehicle:
-  wheelbase: 0.3302          # m (gym default lf + lr)
+  wheelbase: 0.3302          # m (standard F1TENTH chassis)
   max_steer: 0.4189          # rad (24 deg)
   max_speed: 3.0             # m/s, start conservative; raise after testing
   max_accel: 3.0             # m/s^2

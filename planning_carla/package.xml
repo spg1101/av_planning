@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>planning_carla</name>
+  <version>0.1.0</version>
+  <description>CARLA platform adapter (synchronous tick, sensors, ground truth, /drive) and map export tools</description>
+  <maintainer email="planning-lead@example.com">Planning Lead</maintainer>
+  <license>MIT</license>
+
+  <depend>rclpy</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>rosgraph_msgs</depend>
+  <depend>builtin_interfaces</depend>
+  <depend>ackermann_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>av_msgs</depend>
+  <exec_depend>pointcloud_to_laserscan</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <!-- The `carla` Python client is installed with pip (version must match the server):
+       python3 -m pip install carla==0.9.16 -->
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

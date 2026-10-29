@@ -8,7 +8,7 @@ select = ["E", "F", "W", "I", "B"]
 ignore = ["B008"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["planning_core", "planning_nodes", "planning_world_model",
+known-first-party = ["planning_core", "planning_nodes", "planning_world_model", "planning_carla", "planning_localization",
                      "planning_sim", "planning_eval"]
 
 [tool.mypy]

@@ -1,8 +1,12 @@
 """World model node (Member A, task P1.4 / P2.2).
 
-In:  TF map->base_link, velocity topic (Odometry), /map, /tracking/objects
-Out: /world/ego_state (Odometry in map, 50 Hz), /world/costmap (inflated grid),
+In:  TF map->base_link, velocity topic (Odometry), /sensors/scan, /tracking/objects
+Out: /world/ego_state (Odometry in map, 50 Hz),
+     /world/costmap (rolling grid around the car from the live scan, inflated by the car's radius),
      /world/obstacles (tracked objects + constant-velocity predictions)
+
+The grid math lives in planning_core.world.costmap (unit-tested).
+TODO(member A): ray-trace free space, merge the static SLAM map, keep hits for a short time.
 """
 
 import numpy as np
@@ -11,26 +15,12 @@ from av_msgs.msg import TrackedObjectArray
 from geometry_msgs.msg import Pose
 from nav_msgs.msg import OccupancyGrid, Odometry
 from rclpy.node import Node
-from rclpy.qos import DurabilityPolicy, QoSProfile
 from rclpy.time import Time
+from sensor_msgs.msg import LaserScan
 from tf2_ros import Buffer, TransformException, TransformListener
 
-
-def inflate(grid: np.ndarray, radius_cells: int) -> np.ndarray:
-    """Mark every cell within radius of an occupied cell as occupied (100)."""
-    occupied = grid >= 50
-    out = grid.copy()
-    h, w = grid.shape
-    for dy in range(-radius_cells, radius_cells + 1):
-        for dx in range(-radius_cells, radius_cells + 1):
-            if dx * dx + dy * dy > radius_cells * radius_cells:
-                continue
-            shifted = np.zeros_like(occupied)
-            ys, yd = slice(max(dy, 0), h + min(dy, 0)), slice(max(-dy, 0), h + min(-dy, 0))
-            xs, xd = slice(max(dx, 0), w + min(dx, 0)), slice(max(-dx, 0), w + min(-dx, 0))
-            shifted[ys, xs] = occupied[yd, xd]
-            out[shifted] = 100
-    return out
+from planning_core.world.costmap import inflate, rolling_grid, scan_to_points, transform_points
+from planning_nodes.conversions import quaternion_to_yaw
 
 
 class WorldModelNode(Node):
@@ -39,7 +29,10 @@ class WorldModelNode(Node):
         self.declare_parameter("map_frame", "map")
         self.declare_parameter("base_frame", "base_link")
         self.declare_parameter("velocity_topic", "/odometry/filtered")
-        self.declare_parameter("inflation_radius", 0.3)
+        self.declare_parameter("inflation_radius", 0.3)  # m, about half the car's width
+        self.declare_parameter("costmap_size", 10.0)  # m, side of the square window
+        self.declare_parameter("costmap_resolution", 0.05)  # m per cell
+        self.declare_parameter("costmap_period", 0.1)  # s between costmap updates
         self.declare_parameter("prediction_horizon", 2.0)
         self.declare_parameter("prediction_dt", 0.2)
 
@@ -47,15 +40,15 @@ class WorldModelNode(Node):
         self.tf_listener = TransformListener(self.tf_buffer, self)
         self.velocity = None
 
-        latched = QoSProfile(depth=1, durability=DurabilityPolicy.TRANSIENT_LOCAL)
+        self.last_costmap_time = None
         self.create_subscription(
             Odometry, self.get_parameter("velocity_topic").value, lambda m: setattr(self, "velocity", m), 10
         )
-        self.create_subscription(OccupancyGrid, "/map", self.on_map, latched)
+        self.create_subscription(LaserScan, "/sensors/scan", self.on_scan, 5)
         self.create_subscription(TrackedObjectArray, "/tracking/objects", self.on_objects, 10)
 
         self.ego_pub = self.create_publisher(Odometry, "/world/ego_state", 10)
-        self.costmap_pub = self.create_publisher(OccupancyGrid, "/world/costmap", latched)
+        self.costmap_pub = self.create_publisher(OccupancyGrid, "/world/costmap", 1)
         self.obstacles_pub = self.create_publisher(TrackedObjectArray, "/world/obstacles", 10)
         self.create_timer(0.02, self.publish_ego)
 
@@ -78,14 +71,36 @@ class WorldModelNode(Node):
             msg.twist = self.velocity.twist  # body-frame twist, same in any parent frame
         self.ego_pub.publish(msg)
 
-    def on_map(self, msg: OccupancyGrid):
-        """TODO(member A): also mark live /sensors/scan hits and use a rolling local window."""
-        grid = np.array(msg.data, dtype=np.int16).reshape(msg.info.height, msg.info.width)
-        radius = int(np.ceil(self.get_parameter("inflation_radius").value / msg.info.resolution))
+    def on_scan(self, msg: LaserScan):
+        now = self.get_clock().now()
+        period = self.get_parameter("costmap_period").value
+        if self.last_costmap_time is not None and (now - self.last_costmap_time).nanoseconds * 1e-9 < period:
+            return
+        map_frame = self.get_parameter("map_frame").value
+        try:
+            to_scan = self.tf_buffer.lookup_transform(map_frame, msg.header.frame_id, Time())
+            to_base = self.tf_buffer.lookup_transform(
+                map_frame, self.get_parameter("base_frame").value, Time()
+            )
+        except TransformException:
+            return
+        self.last_costmap_time = now
+        t = to_scan.transform
+        local = scan_to_points(msg.ranges, msg.angle_min, msg.angle_increment, msg.range_min, msg.range_max)
+        pts = transform_points(local, t.translation.x, t.translation.y, quaternion_to_yaw(t.rotation))
+        res = self.get_parameter("costmap_resolution").value
+        centre = (to_base.transform.translation.x, to_base.transform.translation.y)
+        grid, (ox, oy) = rolling_grid(pts, centre, self.get_parameter("costmap_size").value, res)
+        grid = inflate(grid, int(np.ceil(self.get_parameter("inflation_radius").value / res)))
+
         out = OccupancyGrid()
-        out.header = msg.header
-        out.info = msg.info
-        out.data = inflate(grid, radius).astype(np.int8).flatten().tolist()
+        out.header.stamp = msg.header.stamp
+        out.header.frame_id = map_frame
+        out.info.resolution = float(res)
+        out.info.width = out.info.height = grid.shape[0]
+        out.info.origin.position.x, out.info.origin.position.y = float(ox), float(oy)
+        out.info.origin.orientation.w = 1.0
+        out.data = grid.flatten().tolist()
         self.costmap_pub.publish(out)
 
     def on_objects(self, msg: TrackedObjectArray):

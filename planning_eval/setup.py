@@ -20,6 +20,7 @@ setup(
     entry_points={
         "console_scripts": [
             "localization_error = planning_eval.localization_error:main",
+            "scenario_monitor = planning_eval.scenario_monitor:main",
         ],
     },
 )

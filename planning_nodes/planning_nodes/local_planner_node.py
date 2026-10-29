@@ -4,7 +4,8 @@ In:  /planning/route, /planning/behavior, /world/ego_state, /world/costmap, /wor
 Out: /planning/trajectory (av_msgs/Trajectory) at 10-20 Hz
 
 Version 0 (this file): follows the route centerline with a curvature-aware velocity
-profile and honours STOP / E_STOP. It already makes the full loop runnable.
+profile, respects the behavior speed limit (lead-vehicle following), stops at the behavior's
+stop point and at the end of an open route, and honours E_STOP. The full loop already runs.
 TODO(member B): replace `plan_centerline` with lattice candidates + collision checks + cost.
 """
 
@@ -16,7 +17,7 @@ from nav_msgs.msg import OccupancyGrid, Odometry, Path
 from rclpy.node import Node
 from rclpy.qos import DurabilityPolicy, QoSProfile
 
-from planning_core.geometry.path import arc_lengths, curvatures, headings
+from planning_core.geometry.path import arc_lengths, curvatures, headings, resample
 from planning_core.trajectory.velocity_profile import time_stamps, velocity_profile
 from planning_core.types import Trajectory, TrajectoryPoint
 from planning_core.vehicle import VehicleParams
@@ -30,6 +31,7 @@ class LocalPlannerNode(Node):
         self.declare_parameter("rate_hz", 10.0)
         self.declare_parameter("horizon_m", 8.0)
         self.declare_parameter("closed_loop", True)
+        self.declare_parameter("resample_ds", 0.2)  # m between trajectory points
         vehicle_file = self.get_parameter("vehicle_file").value
         if not vehicle_file:
             raise RuntimeError("parameter vehicle_file is required")
@@ -59,30 +61,43 @@ class LocalPlannerNode(Node):
         self.route_xy = np.array([[p.pose.position.x, p.pose.position.y] for p in msg.poses])
 
     def window(self, ego):
-        """Route points from the one nearest the car out to the horizon (wrapping on loops)."""
+        """Route points from the one nearest the car out to the horizon (wrapping on loops).
+
+        Returns (xy, reaches_route_end)."""
         xy = self.route_xy
         i0 = int(np.argmin(np.hypot(xy[:, 0] - ego.x, xy[:, 1] - ego.y)))
-        if self.get_parameter("closed_loop").value:
-            xy = np.vstack([xy[i0:], xy[:i0], xy[i0 : i0 + 1]])
-        else:
-            xy = xy[i0:]
+        closed = self.get_parameter("closed_loop").value
+        xy = np.vstack([xy[i0:], xy[:i0], xy[i0 : i0 + 1]]) if closed else xy[i0:]
+        if len(xy) >= 2:
+            xy = resample(xy, self.get_parameter("resample_ds").value)
         s = arc_lengths(xy)
         keep = s <= self.get_parameter("horizon_m").value
         keep[: min(2, len(keep))] = True
-        return xy[keep]
+        return xy[keep], (not closed and bool(keep[-1]))
+
+    def stop_index(self, xy, ego, state):
+        """Index of the point to stop at, or None to keep driving."""
+        b = self.behavior
+        if b is not None and b.has_stop_point:
+            return int(np.argmin(np.hypot(xy[:, 0] - b.stop_point.x, xy[:, 1] - b.stop_point.y)))
+        if state == BehaviorCommand.STOP:  # no stop point given: comfortable stop
+            dist = ego.v**2 / (2.0 * 0.7 * self.vehicle.max_decel) + 0.5
+            return int(np.searchsorted(arc_lengths(xy), dist))
+        return None
 
     def plan_centerline(self, ego, state: int) -> Trajectory:
-        xy = self.window(ego)
+        xy, reaches_end = self.window(ego)
         if len(xy) < 2:
             return Trajectory(emergency_stop=True)
+        v_end = 0.0 if reaches_end else None  # stop at the goal of an open route
+        stop = self.stop_index(xy, ego, state)
+        if stop is not None:
+            xy, v_end = xy[: max(stop + 1, 2)], 0.0
         s = arc_lengths(xy)
         k = np.clip(curvatures(xy), -self.vehicle.max_curvature, self.vehicle.max_curvature)
         v_limit = self.vehicle.max_speed
-        if self.behavior is not None and self.behavior.speed_limit > 0.0:
+        if self.behavior is not None and self.behavior.speed_limit >= 0.0:
             v_limit = min(v_limit, self.behavior.speed_limit)
-        v_end = 0.0 if state == BehaviorCommand.STOP else None
-        if state == BehaviorCommand.STOP:
-            v_limit = min(v_limit, ego.v)  # never speed up while stopping
         v = velocity_profile(
             s,
             k,

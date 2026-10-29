@@ -1,0 +1,13 @@
+# Drive from a start to a goal on empty roads: route following, speed in curves, stopping at the goal.
+# Pick spawn_index / goal_index for your town with:  ros2 run planning_carla list_spawn_points --town Town03
+# The /**: wildcard applies these values to whichever node loads this file.
+/**:
+  ros__parameters:
+    scenario_name: town03_route_empty
+    town: Town03
+    spawn_index: 0
+    goal_index: 40        # TODO(lead): choose a goal 200-500 m away along roads
+    num_vehicles: 0
+    seed: 1
+    timeout: 120.0        # s of simulation time
+    goal_tolerance: 3.0   # m

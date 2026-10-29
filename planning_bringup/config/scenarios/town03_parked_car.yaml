@@ -1,0 +1,13 @@
+# A parked car blocks the route. Expected today: the car stops behind it (FAIL by timeout).
+# PASSES once the lattice planner (Member B) and the OVERTAKE behavior (lead) go around it.
+/**:
+  ros__parameters:
+    scenario_name: town03_parked_car
+    town: Town03
+    spawn_index: 0
+    goal_index: 40
+    parked_vehicle_indices: [41]   # TODO(lead): a spawn point on the route, 50-100 m ahead
+    num_vehicles: 0
+    seed: 3
+    timeout: 120.0
+    goal_tolerance: 3.0

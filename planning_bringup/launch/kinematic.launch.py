@@ -1,4 +1,7 @@
-"""Fastest loop: kinematic sim + the full planning stack + pure pursuit stub. No gym, no GPU.
+"""Fastest loop, no CARLA: kinematic sim + planners + pure pursuit stub on an oval track.
+
+Runs on any laptop (and in CI). Use it for planning logic and topic plumbing; use CARLA for
+everything that needs sensors, traffic or a real road network.
 
 ros2 launch planning_bringup kinematic.launch.py
 ros2 launch planning_bringup kinematic.launch.py perfect_tracking:=true   # planning without controls
@@ -18,12 +21,12 @@ LOCALIZATION = get_package_share_directory("planning_localization")
 
 def generate_launch_description():
     vehicle = os.path.join(BRINGUP, "config", "vehicles", "f1tenth.yaml")
-    waypoints = LaunchConfiguration("waypoints_file")
+    graph = LaunchConfiguration("graph_file")
     perfect = LaunchConfiguration("perfect_tracking")
     return LaunchDescription(
         [
             DeclareLaunchArgument(
-                "waypoints_file", default_value=os.path.join(BRINGUP, "maps", "example_oval.csv")
+                "graph_file", default_value=os.path.join(BRINGUP, "maps", "example_oval.csv")
             ),
             DeclareLaunchArgument("perfect_tracking", default_value="false"),
             Node(
@@ -42,7 +45,7 @@ def generate_launch_description():
                 package="planning_nodes",
                 executable="global_planner",
                 output="screen",
-                parameters=[{"waypoints_file": waypoints, "closed_loop": True}],
+                parameters=[{"graph_file": graph, "closed_loop": True}],
             ),
             Node(package="planning_nodes", executable="behavior_planner", output="screen"),
             Node(

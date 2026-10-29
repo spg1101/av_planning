@@ -32,4 +32,9 @@ ekf_filter_node:
     imu0_remove_gravitational_acceleration: true
     imu0_queue_size: 10
 
-    # TODO(member A, P3.2): add a second EKF in the map frame + navsat_transform_node for GNSS.
+    # TODO(member A): GNSS. Add navsat_transform_node + a second EKF (world_frame: map) fusing
+    # /sensors/gnss, as an alternative to SLAM for the map -> odom correction. Note: CARLA GNSS
+    # is relative to each town's geo-reference, so set the navsat datum from that.
+
+    # Start pose: the CARLA adapter publishes the true start pose on /set_pose before the first
+    # tick, so the odom frame starts aligned with CARLA's world frame (no initial_state needed).

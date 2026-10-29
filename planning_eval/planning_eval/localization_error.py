@@ -1,6 +1,6 @@
 """Live localization error vs ground truth (Member A, task P1.2).
 
-Works the same on gym, kinematic sim, bag replay or CARLA:
+Works the same on CARLA, bag replay or the kinematic sim:
   ros2 run planning_eval localization_error --ros-args -p use_sim_time:=true
 Estimate = TF-equivalent pose from `estimate_topic` (default /world/ego_state, map frame).
 Prints RMSE every 5 s and a summary on shutdown.

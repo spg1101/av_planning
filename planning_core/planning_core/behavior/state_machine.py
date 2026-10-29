@@ -27,6 +27,19 @@ class BehaviorParams:
     clear_distance: float = 4.0  # m: resume once the obstacle is beyond this
     stopped_speed: float = 0.2  # m/s: obstacle counts as stopped below this
     allow_overtake: bool = False  # TODO(lead): enable once the lattice handles lane offsets
+    # Following a moving lead vehicle (adaptive cruise): keep min_gap + time_gap * lead speed.
+    follow_range: float = 15.0  # m: start adapting speed to a lead vehicle inside this gap
+    min_gap: float = 1.0  # m
+    time_gap: float = 1.0  # s
+    follow_gain: float = 0.5  # 1/s: how strongly the gap error changes the speed
+
+
+def follow_speed_limit(gap: float, lead_speed: float, speed_limit: float, p: BehaviorParams) -> float:
+    """Speed that settles at the desired gap behind a lead vehicle (never above speed_limit)."""
+    if gap >= p.follow_range:
+        return speed_limit
+    desired_gap = p.min_gap + p.time_gap * max(lead_speed, 0.0)
+    return max(0.0, min(speed_limit, lead_speed + p.follow_gain * (gap - desired_gap)))
 
 
 class BehaviorStateMachine:

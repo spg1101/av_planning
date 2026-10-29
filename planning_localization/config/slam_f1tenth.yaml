@@ -1,18 +1,17 @@
-# slam_toolbox in mapping mode: builds /map and publishes map -> odom.
+# slam_toolbox for the F1TENTH car (2D lidar, about 10 m range). `mode` is set by the launch file.
 slam_toolbox:
   ros__parameters:
-    mode: mapping
     odom_frame: odom
     map_frame: map
     base_frame: base_link
     scan_topic: /sensors/scan
     resolution: 0.05
-    max_laser_range: 20.0          # gym scans reach 30 m; a Hokuyo UST-10LX about 10 m
+    max_laser_range: 10.0
     minimum_time_interval: 0.1
     transform_publish_period: 0.02
     transform_timeout: 0.2
     tf_buffer_duration: 30.0
-    minimum_travel_distance: 0.2   # small car: add a scan every 20 cm
+    minimum_travel_distance: 0.2
     minimum_travel_heading: 0.2
     map_update_interval: 1.0
     use_scan_matching: true

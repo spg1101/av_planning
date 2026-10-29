@@ -1,0 +1,26 @@
+# slam_toolbox for the full-size CARLA car. `mode` is set by localization.launch.py.
+# Input: /sensors/scan, a 2D slice of the 32-beam lidar (pointcloud_to_laserscan, 0.3-2.0 m
+# above base_link), so the ground and overhanging trees are removed.
+# For 3D lidar odometry (KISS-ICP, LIO-SAM) see docs/architecture.md: Member A's evaluation task.
+slam_toolbox:
+  ros__parameters:
+    odom_frame: odom
+    map_frame: map
+    base_frame: base_link
+    scan_topic: /sensors/scan
+    resolution: 0.1                # m per cell: city scale
+    max_laser_range: 50.0
+    minimum_time_interval: 0.1
+    transform_publish_period: 0.02
+    transform_timeout: 0.2
+    tf_buffer_duration: 30.0
+    minimum_travel_distance: 1.0   # add a scan every metre
+    minimum_travel_heading: 0.2
+    map_update_interval: 2.0
+    use_scan_matching: true
+    use_scan_barycenter: true
+    do_loop_closing: true
+    loop_search_maximum_distance: 10.0
+    correlation_search_space_dimension: 1.0
+    debug_logging: false
+    throttle_scans: 1

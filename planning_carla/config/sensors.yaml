@@ -1,0 +1,56 @@
+# Sensor suite spawned on the ego vehicle by carla_adapter.
+# Positions are in the ROS base_link frame (rear axle centre, x forward, y LEFT, z up), metres.
+# The adapter converts them to CARLA's frame when it attaches the sensors.
+lidar:
+  enabled: true
+  frame_id: lidar
+  x: 1.5
+  y: 0.0
+  z: 2.0
+  attributes:
+    channels: "32"
+    range: "70"
+    points_per_second: "300000"
+    rotation_frequency: "20"     # must equal 1 / fixed_delta_seconds for one full sweep per tick
+    upper_fov: "10"
+    lower_fov: "-30"
+    dropoff_general_rate: "0.0"
+    noise_stddev: "0.02"
+
+imu:
+  enabled: true
+  frame_id: imu
+  x: 1.0
+  y: 0.0
+  z: 0.5
+  attributes:
+    noise_accel_stddev_x: "0.05"
+    noise_accel_stddev_y: "0.05"
+    noise_accel_stddev_z: "0.05"
+    noise_gyro_stddev_z: "0.005"
+    noise_gyro_bias_z: "0.001"
+
+gnss:
+  enabled: true
+  frame_id: gnss
+  x: 1.0
+  y: 0.0
+  z: 2.0
+  attributes:
+    noise_lat_stddev: "0.000005"   # roughly 0.5 m
+    noise_lon_stddev: "0.000005"
+    noise_alt_stddev: "0.5"
+
+camera:
+  enabled: false                   # turn on when the perception model needs images
+  frame_id: camera
+  x: 2.0
+  y: 0.0
+  z: 1.6
+  attributes:
+    image_size_x: "1280"
+    image_size_y: "720"
+    fov: "90"
+
+collision:
+  enabled: true                    # publishes /ground_truth/collision for the scenario monitor

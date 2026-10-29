@@ -7,6 +7,9 @@
   <maintainer email="planning-lead@example.com">Planning Lead</maintainer>
   <license>MIT</license>
 
+  <depend>rclpy</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
   <exec_depend>launch</exec_depend>
   <exec_depend>launch_ros</exec_depend>
   <exec_depend>robot_localization</exec_depend>

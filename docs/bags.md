@@ -4,13 +4,14 @@ Bags are never committed. Store them on the shared drive and list them here.
 
 ## Recording
 
-Record raw sensors and ground truth only, so localization can be re-run on replay:
+Record from a CARLA run (raw sensors + ground truth; the launch file picks the topics):
 
 ```bash
-ros2 bag record -s mcap -o gym_levine_01 \
-  /sensors/scan /sensors/imu /vehicle/odom /sensors/gnss \
-  /perception/detections /ground_truth/odom /tf_static /clock
+ros2 launch planning_bringup carla.launch.py scenario:=town03_route_traffic \
+  localization:=slam_mapping monitor:=false record:=t03_traffic_01
 ```
+
+Lidar bags grow at roughly 5 MB per second; keep runs to a few minutes.
 
 Don't record `/tf`, `/odometry/filtered` or `/map`: replay regenerates them.
 
@@ -18,4 +19,4 @@ Don't record `/tf`, `/odometry/filtered` or `/map`: replay regenerates them.
 
 | Name | Platform | Date | Length | Contents | Notes |
 | --- | --- | --- | --- | --- | --- |
-| gym_levine_01 | f1tenth_gym | | | scan, odom, ground truth | teleop lap |
+| t03_traffic_01 | CARLA Town03 | | | lidar, scan, imu, gnss, odom, ground truth | example row |

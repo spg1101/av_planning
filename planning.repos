@@ -1,10 +1,8 @@
 # Everything this repo needs besides itself. Import with:  vcs import < planning.repos
+# (CARLA itself is not here: the server runs on the AWS instance, and the Python client
+#  is installed with pip, matching the server version. See docs/aws_carla.md.)
 repositories:
   av_interfaces:
     type: git
     url: git@github.com:<your-org>/av_interfaces.git
     version: main
-  f1tenth_gym_ros:
-    type: git
-    url: https://github.com/f1tenth/f1tenth_gym_ros.git
-    version: main      # pin to a tested commit hash once the gym runs on Humble for you

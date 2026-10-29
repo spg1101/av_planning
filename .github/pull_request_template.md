@@ -14,7 +14,7 @@ Plan ID: P_._   <!-- e.g. P1.4 -->
 
 - Localization RMSE: ___ m on bag ___
 - Planning cycle time: ___ ms (p95)
-- Scenario / lap result: ___
+- Scenario suite (`scripts/run_scenarios.sh`): ___ / ___ passed (before: ___)
 
 ## Checklist
 

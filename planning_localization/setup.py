@@ -23,6 +23,9 @@ setup(
     license="MIT",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": [],
+        "console_scripts": [
+            "ground_truth_localization = planning_localization.ground_truth_localization:main",
+            "initial_pose_from_ground_truth = planning_localization.initial_pose_from_ground_truth:main",
+        ],
     },
 )
